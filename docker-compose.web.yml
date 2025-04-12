@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  hdi1:
+    build: .
+    container_name: hdi1-ui-runner
+    environment:
+      - GRADIO_SERVER_NAME=0.0.0.0
+    ports:
+      - "7860:7860"
+    volumes:
+      - ./hdi1-cache:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: >
+      bash -c "source /workspace/venv/bin/activate && python -m hdi1.web --host 0.0.0.0 --port 7860"
