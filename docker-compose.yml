@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  hdi1:
+    build: .  # Dockerfile を直接使う場合
+    container_name: hdi1-runner
+    environment:
+      - GRADIO_SERVER_NAME=0.0.0.0
+    ports:
+      - "7860:7860"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    volumes:
+      - ./hdi1-cache:/root/.cache/huggingface
+      - ./outputs:/root/outputs/
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    # command: >
+    #   bash -c "
+    #     source /workspace/venv/bin/activate &&
+    #     python -m hdi1.web
+    #   "
+    command: >
+      bash -c "
+        source /workspace/venv/bin/activate &&
+        python -m hdi1 -m dev -o /root/outputs/output.png 'A cat holding a sign that says Hello'
+      "
